@@ -15,7 +15,6 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import type { PageId } from '../types';
-import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import {
   initGeminiChat,

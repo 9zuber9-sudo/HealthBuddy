@@ -1,36 +1,7 @@
 import type { SymptomInput, AIAnalysisResult, ActivityLog, FirstAidGuide } from '../types';
 import { simulateDelay, API_BASE_URL, IS_MOCK_MODE } from './apiConfig';
 
-const MOCK_ACTIVITIES: ActivityLog[] = [
-  {
-    id: 'act-1',
-    type: 'medicine',
-    title: 'Medicine Taken',
-    description: 'Vitamin D3 (1000 IU) marked as taken for 8:00 PM dose',
-    timestamp: 'Today at 8:05 PM',
-  },
-  {
-    id: 'act-2',
-    type: 'prescription',
-    title: 'Prescription Added',
-    description: 'Dr. Sharma added Amoxicillin 500mg (Post-viral recovery)',
-    timestamp: 'Yesterday at 3:15 PM',
-  },
-  {
-    id: 'act-3',
-    type: 'appointment',
-    title: 'Appointment Completed',
-    description: 'Annual Cardio Follow-up with Dr. Rachel Vance',
-    timestamp: 'Sep 22, 2026',
-  },
-  {
-    id: 'act-4',
-    type: 'record',
-    title: 'Health Record Uploaded',
-    description: 'Lipid Panel & Metabolic Panel Lab Report (PDF)',
-    timestamp: 'Sep 18, 2026',
-  },
-];
+
 
 const MOCK_FIRST_AID: FirstAidGuide[] = [
   {
