@@ -263,6 +263,29 @@ export const signOutUser = async (): Promise<void> => {
   await simulateDelay(150);
 };
 
+// Google OAuth Sign-In (Supabase handles the redirect)
+export const signInWithGoogle = async (): Promise<{ error: string | null }> => {
+  if (!isSupabaseConfigured) {
+    return {
+      error: 'Google Sign-In requires Supabase to be configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.',
+    };
+  }
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,   // redirect back to the app after Google login
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    },
+  });
+
+  if (error) return { error: error.message };
+  return { error: null };
+};
+
 // Update User Profile
 export const updateUserProfile = async (updated: Partial<UserProfile>): Promise<UserProfile> => {
   const current = await getCurrentUser() || DEFAULT_USER_PROFILE;

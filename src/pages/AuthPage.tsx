@@ -19,7 +19,7 @@ import type { PageId, UserProfile } from '../types';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
 import { Badge } from '../components/common/Badge';
-import { signInWithSupabase, signUpWithSupabase } from '../services/authService';
+import { signInWithSupabase, signUpWithSupabase, signInWithGoogle } from '../services/authService';
 import { isSupabaseConfigured } from '../services/supabaseClient';
 import { useToast } from '../context/ToastContext';
 
@@ -43,6 +43,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleQuickDemoLogin = async () => {
@@ -68,6 +69,23 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       setErrorMsg(err?.message || 'Quick sign-in failed.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    setErrorMsg('');
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        setErrorMsg(error);
+        showToast({ type: 'error', title: 'Google Sign-In Failed', message: error });
+      }
+      // On success, Supabase redirects the browser — no further action needed here
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Google sign-in failed.');
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -384,6 +402,37 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               {mode === 'signin' ? 'Sign In to HealthBuddy' : 'Register Account'}
             </Button>
           </form>
+
+          {/* ─── Google Sign-In Divider ─── */}
+          <div className="relative flex items-center gap-3 my-1">
+            <div className="flex-1 h-px bg-slate-800" />
+            <span className="text-[11px] text-slate-500 font-medium whitespace-nowrap">or continue with</span>
+            <div className="flex-1 h-px bg-slate-800" />
+          </div>
+
+          {/* Google OAuth Button */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading || isLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-800 font-bold text-sm transition-all shadow-sm border border-gray-200 disabled:opacity-60 disabled:cursor-not-allowed group cursor-pointer"
+          >
+            {isGoogleLoading ? (
+              <svg className="w-5 h-5 animate-spin text-gray-500" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              /* Official Google G logo SVG */
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              </svg>
+            )}
+            <span>{isGoogleLoading ? 'Redirecting to Google...' : 'Continue with Google'}</span>
+          </button>
 
           {/* Toggle mode text */}
           <div className="pt-2 text-center text-xs text-slate-400">
