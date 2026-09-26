@@ -63,7 +63,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           message: `Logged in as ${user.name}`,
         });
         onLoginSuccess(user);
-        onNavigate('dashboard');
       }
     } catch (err: any) {
       setErrorMsg(err?.message || 'Quick sign-in failed.');
@@ -128,7 +127,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             message: `Welcome to HealthBuddy, ${user.name}!`,
           });
           onLoginSuccess(user);
-          onNavigate('dashboard');
         }
       } else {
         const { user, error } = await signInWithSupabase(email, password);
@@ -142,7 +140,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             message: `Signed in as ${user.name}`,
           });
           onLoginSuccess(user);
-          onNavigate('dashboard');
         }
       }
     } catch (err: any) {

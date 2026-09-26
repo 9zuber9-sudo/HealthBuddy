@@ -22,6 +22,7 @@ import { AddFamilyModal } from './components/modals/AddFamilyModal';
 
 // Services
 import { getCurrentUser, signOutUser } from './services/authService';
+import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 import { addMedicine } from './services/medicineService';
 import { uploadHealthRecord } from './services/recordsService';
 import { addFamilyMember, getFamilyMembers } from './services/familyService';
@@ -59,17 +60,55 @@ export const AppContent: React.FC = () => {
   };
 
   useEffect(() => {
+    // Initial load — check for existing session (handles page refresh while logged in)
     const init = async () => {
       try {
         const u = await getCurrentUser();
-        setUser(u);
-        const f = await getFamilyMembers();
-        setFamilyMembers(f);
+        if (u) {
+          setUser(u);
+          const f = await getFamilyMembers();
+          setFamilyMembers(f);
+          // If returning from Google OAuth redirect, land on dashboard
+          const params = new URLSearchParams(window.location.hash.replace('#', '?'));
+          const accessToken = params.get('access_token');
+          if (accessToken) {
+            setActivePage('dashboard');
+          }
+        }
       } catch (err) {
         console.error('Failed to fetch initial user profile', err);
       }
     };
     init();
+
+    // Supabase real-time auth state listener (handles Google OAuth callback)
+    if (isSupabaseConfigured) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          try {
+            const u = await getCurrentUser();
+            if (u) {
+              setUser(u);
+              const f = await getFamilyMembers();
+              setFamilyMembers(f);
+              setActivePage('dashboard');
+              showToast({
+                type: 'success',
+                title: 'Welcome to HealthBuddy!',
+                message: `Signed in as ${u.name}`,
+              });
+            }
+          } catch (err) {
+            console.error('Auth state change error', err);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setFamilyMembers([]);
+          setActivePage('auth');
+        }
+      });
+      return () => subscription.unsubscribe();
+    }
   }, []);
 
   const handleNavigate = (page: PageId) => {
@@ -118,7 +157,11 @@ export const AppContent: React.FC = () => {
         return (
           <AuthPage
             onNavigate={handleNavigate}
-            onLoginSuccess={(u) => setUser(u)}
+            onLoginSuccess={(u) => {
+              setUser(u);
+              setActivePage('dashboard');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         );
       case 'dashboard':
