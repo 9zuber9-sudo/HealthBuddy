@@ -25,10 +25,10 @@ export const Card: React.FC<CardProps> = ({
   };
 
   const variants = {
-    default: 'bg-white border border-slate-200/80 shadow-xs shadow-slate-100',
-    flat: 'bg-slate-50 border border-slate-200/60',
-    gradient: 'bg-gradient-to-br from-white to-slate-50/80 border border-slate-200/80 shadow-xs',
-    bordered: 'bg-white border-2 border-slate-200',
+    default: 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs text-slate-900 dark:text-slate-100',
+    flat: 'bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 text-slate-900 dark:text-slate-100',
+    gradient: 'bg-gradient-to-br from-white to-slate-50/80 dark:from-slate-900 dark:to-slate-950 border border-slate-200/80 dark:border-slate-800 shadow-xs text-slate-900 dark:text-slate-100',
+    bordered: 'bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100',
   };
 
   const hoverClass = hoverable

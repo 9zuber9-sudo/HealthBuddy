@@ -26,7 +26,7 @@ interface EmergencyPageProps {
 export const EmergencyPage: React.FC<EmergencyPageProps> = ({ onNavigate }) => {
   const [guides, setGuides] = useState<FirstAidGuide[]>([]);
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [emergencyNumber, setEmergencyNumber] = useState('911');
+  const [emergencyNumber, setEmergencyNumber] = useState('112');
   const [expandedGuideId, setExpandedGuideId] = useState<string | null>('fa-cardiac');
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const EmergencyPage: React.FC<EmergencyPageProps> = ({ onNavigate }) => {
       ]);
       setGuides(gData);
       setUser(uData);
-      setEmergencyNumber(sData.emergencyNumber || '911');
+      setEmergencyNumber(sData.emergencyNumber || '112');
     };
     load();
   }, []);
@@ -97,7 +97,7 @@ export const EmergencyPage: React.FC<EmergencyPageProps> = ({ onNavigate }) => {
             </button>
 
             <a
-              href={`tel:${user?.emergencyContactPhone || '911'}`}
+              href={`tel:${user?.emergencyContactPhone || '112'}`}
               className="p-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors"
             >
               <Heart className="w-4 h-4 text-rose-200" /> Call Emergency Contact

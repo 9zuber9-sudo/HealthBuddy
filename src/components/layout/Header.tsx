@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="animate-pulse"
           >
             <span className="hidden sm:inline">Emergency Mode</span>
-            <span className="sm:hidden">🚨 911</span>
+            <span className="sm:hidden">🚨 112</span>
           </Button>
         )}
 

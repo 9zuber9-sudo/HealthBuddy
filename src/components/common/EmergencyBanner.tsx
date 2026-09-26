@@ -15,7 +15,7 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
   message = 'Based on your reported symptoms, immediate medical evaluation is required. Do not wait for symptoms to worsen.',
   onOpenEmergency,
   onFindHealthcare,
-  emergencyNumber = '911',
+  emergencyNumber = '112',
 }) => {
   return (
     <div className="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white p-6 rounded-2xl shadow-xl border border-red-500 my-4 animate-in fade-in duration-300">

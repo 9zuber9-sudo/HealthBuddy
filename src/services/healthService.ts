@@ -192,7 +192,7 @@ export const analyzeSymptoms = async (input: SymptomInput): Promise<AIAnalysisRe
       'Stay seated, refrain from physical exertion, and ensure someone is aware of your status.'
     ];
     recommendations = [
-      'Call emergency services (911/112) immediately.',
+      'Call emergency services (112) immediately.',
       'Keep your location clear and accessible for responders.',
       'Notify your primary emergency contact.',
       'Avoid driving yourself to the emergency department.'

@@ -48,7 +48,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   medicineReminders: true,
   emergencyAlerts: true,
   privacyMode: false,
-  emergencyNumber: '911',
+  emergencyNumber: '112',
   theme: 'light',
 };
 
