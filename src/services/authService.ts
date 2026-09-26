@@ -249,10 +249,13 @@ export const signInWithGoogle = async (): Promise<{ error: string | null }> => {
     };
   }
 
+  // Use current window origin (works seamlessly on Vercel and localhost)
+  const redirectUrl = window.location.origin.replace(/\/$/, '');
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin,   // redirect back to the app after Google login
+      redirectTo: redirectUrl,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
