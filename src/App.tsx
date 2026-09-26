@@ -37,6 +37,27 @@ export const AppContent: React.FC = () => {
   const [isAddRecordOpen, setIsAddRecordOpen] = useState(false);
   const [isAddFamilyOpen, setIsAddFamilyOpen] = useState(false);
 
+  // Theme state management
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('healthbuddy_theme') || localStorage.getItem('healthbridge_theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('healthbuddy_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('healthbuddy_theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -52,13 +73,27 @@ export const AppContent: React.FC = () => {
   }, []);
 
   const handleNavigate = (page: PageId) => {
+    // Protected pages check
+    const publicPages: PageId[] = ['landing', 'auth', 'emergency', 'healthcare'];
+    if (!user && !publicPages.includes(page)) {
+      showToast({
+        type: 'warning',
+        title: 'Authentication Required',
+        message: 'Please sign in or create an account to access this page.',
+      });
+      setActivePage('auth');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSignOut = async () => {
     await signOutUser();
-    showToast({ type: 'info', title: 'Signed Out', message: 'You have been logged out.' });
+    setUser(null);
+    showToast({ type: 'info', title: 'Signed Out', message: 'You have been logged out successfully.' });
     setActivePage('auth');
   };
 
@@ -139,6 +174,8 @@ export const AppContent: React.FC = () => {
       user={user}
       onNavigate={handleNavigate}
       onSignOut={handleSignOut}
+      isDarkMode={isDarkMode}
+      onToggleTheme={handleToggleTheme}
     >
       {renderActivePage()}
 

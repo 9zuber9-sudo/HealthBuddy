@@ -2,8 +2,16 @@ import type { UserProfile } from '../types';
 import { simulateDelay } from './apiConfig';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 
-const LOCAL_STORAGE_USER_KEY = 'healthbridge_user_profile';
-const LOCAL_STORAGE_SESSION_KEY = 'healthbridge_auth_session';
+const LOCAL_STORAGE_USER_KEY = 'healthbuddy_user_profile';
+const LOCAL_STORAGE_SESSION_KEY = 'healthbuddy_auth_session';
+const LOCAL_STORAGE_ACCOUNTS_KEY = 'healthbuddy_user_accounts';
+
+export interface StoredAccount {
+  email: string;
+  password: string;
+  name: string;
+  profile: UserProfile;
+}
 
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: 'usr_101',
@@ -12,11 +20,18 @@ const DEFAULT_USER_PROFILE: UserProfile = {
   gender: 'Non-binary / Male',
   bloodGroup: 'O+',
   phone: '+1 (555) 234-5678',
-  email: 'alex.morgan@healthbridge.io',
+  email: 'alex.morgan@healthbuddy.io',
   emergencyContactName: 'Sarah Morgan (Sister)',
   emergencyContactPhone: '+1 (555) 987-6543',
   allergies: ['Penicillin', 'Peanuts', 'Dust Mites'],
   existingConditions: ['Asthma (Mild)', 'Hypertension'],
+};
+
+const DEMO_ACCOUNT: StoredAccount = {
+  email: 'alex.morgan@healthbuddy.io',
+  password: 'demo123456',
+  name: 'Alex Morgan',
+  profile: DEFAULT_USER_PROFILE,
 };
 
 export interface UserSettings {
@@ -37,29 +52,62 @@ const DEFAULT_SETTINGS: UserSettings = {
   theme: 'light',
 };
 
-// Retrieve User Profile
-export const getCurrentUser = async (): Promise<UserProfile> => {
+// Helper: Get all registered accounts from local storage
+const getRegisteredAccounts = (): StoredAccount[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_ACCOUNTS_KEY);
+    if (raw) {
+      const accounts: StoredAccount[] = JSON.parse(raw);
+      if (Array.isArray(accounts) && accounts.length > 0) {
+        return accounts;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading registered accounts', e);
+  }
+  // Initialize with default demo account
+  const initial = [DEMO_ACCOUNT];
+  localStorage.setItem(LOCAL_STORAGE_ACCOUNTS_KEY, JSON.stringify(initial));
+  return initial;
+};
+
+// Helper: Save accounts list
+const saveRegisteredAccounts = (accounts: StoredAccount[]): void => {
+  localStorage.setItem(LOCAL_STORAGE_ACCOUNTS_KEY, JSON.stringify(accounts));
+};
+
+// Retrieve User Profile (returns null if not logged in)
+export const getCurrentUser = async (): Promise<UserProfile | null> => {
   if (isSupabaseConfigured) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      return {
-        id: user.id,
-        name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'HealthBridge User',
-        age: user.user_metadata?.age || 30,
-        gender: user.user_metadata?.gender || 'Not specified',
-        bloodGroup: user.user_metadata?.bloodGroup || 'O+',
-        phone: user.phone || '+1 (555) 000-0000',
-        email: user.email || '',
-        emergencyContactName: user.user_metadata?.emergencyContactName || 'Emergency Contact',
-        emergencyContactPhone: user.user_metadata?.emergencyContactPhone || '+1 (555) 911-0000',
-        allergies: user.user_metadata?.allergies || [],
-        existingConditions: user.user_metadata?.existingConditions || [],
-      };
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        return {
+          id: user.id,
+          name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'HealthBuddy User',
+          age: user.user_metadata?.age || 30,
+          gender: user.user_metadata?.gender || 'Not specified',
+          bloodGroup: user.user_metadata?.bloodGroup || 'O+',
+          phone: user.phone || '+1 (555) 000-0000',
+          email: user.email || '',
+          emergencyContactName: user.user_metadata?.emergencyContactName || 'Emergency Contact',
+          emergencyContactPhone: user.user_metadata?.emergencyContactPhone || '+1 (555) 911-0000',
+          allergies: user.user_metadata?.allergies || [],
+          existingConditions: user.user_metadata?.existingConditions || [],
+        };
+      }
+    } catch (err) {
+      console.warn('Supabase auth check failed:', err);
     }
   }
 
   // Fallback Local Storage Mode
-  await simulateDelay(150);
+  await simulateDelay(100);
+  const session = localStorage.getItem(LOCAL_STORAGE_SESSION_KEY);
+  if (!session) {
+    return null;
+  }
+
   const stored = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
   if (stored) {
     try {
@@ -68,19 +116,21 @@ export const getCurrentUser = async (): Promise<UserProfile> => {
       console.error('Error parsing stored user profile', e);
     }
   }
-  localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(DEFAULT_USER_PROFILE));
-  return { ...DEFAULT_USER_PROFILE };
+  
+  return null;
 };
 
-// Supabase Sign Up
+// Supabase / Local Sign Up
 export const signUpWithSupabase = async (
   email: string,
   pass: string,
   fullName: string
 ): Promise<{ user: UserProfile | null; error: string | null }> => {
+  const normalizedEmail = email.trim().toLowerCase();
+
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password: pass,
       options: {
         data: {
@@ -99,7 +149,7 @@ export const signUpWithSupabase = async (
         gender: 'Not specified',
         bloodGroup: 'O+',
         phone: '',
-        email,
+        email: normalizedEmail,
         emergencyContactName: 'Emergency Contact',
         emergencyContactPhone: '+1 (555) 911-0000',
         allergies: [],
@@ -110,26 +160,58 @@ export const signUpWithSupabase = async (
   }
 
   // Local Storage Mode Simulation
-  await simulateDelay(500);
+  await simulateDelay(350);
+
+  const accounts = getRegisteredAccounts();
+  const existing = accounts.find((acc) => acc.email.toLowerCase() === normalizedEmail);
+
+  if (existing) {
+    return {
+      user: null,
+      error: 'An account with this email address already exists. Please sign in instead.',
+    };
+  }
+
   const newUser: UserProfile = {
-    ...DEFAULT_USER_PROFILE,
     id: `usr_${Date.now()}`,
-    name: fullName,
-    email: email,
+    name: fullName.trim(),
+    age: 30,
+    gender: 'Not specified',
+    bloodGroup: 'O+',
+    phone: '',
+    email: normalizedEmail,
+    emergencyContactName: 'Emergency Contact',
+    emergencyContactPhone: '+1 (555) 911-0000',
+    allergies: [],
+    existingConditions: [],
   };
+
+  const newAccount: StoredAccount = {
+    email: normalizedEmail,
+    password: pass,
+    name: fullName.trim(),
+    profile: newUser,
+  };
+
+  accounts.push(newAccount);
+  saveRegisteredAccounts(accounts);
+
   localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(newUser));
-  localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, 'active');
+  localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, newUser.id);
+
   return { user: newUser, error: null };
 };
 
-// Supabase Sign In
+// Supabase / Local Sign In
 export const signInWithSupabase = async (
   email: string,
   pass: string
 ): Promise<{ user: UserProfile | null; error: string | null }> => {
+  const normalizedEmail = email.trim().toLowerCase();
+
   if (isSupabaseConfigured) {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalizedEmail,
       password: pass,
     });
 
@@ -142,51 +224,76 @@ export const signInWithSupabase = async (
   }
 
   // Local Storage Mode Simulation
-  await simulateDelay(500);
-  const stored = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
-  let user: UserProfile = DEFAULT_USER_PROFILE;
-  if (stored) {
-    try {
-      user = JSON.parse(stored);
-      user.email = email;
-    } catch (e) {
-      user = { ...DEFAULT_USER_PROFILE, email };
-    }
-  } else {
-    user = { ...DEFAULT_USER_PROFILE, email };
+  await simulateDelay(350);
+
+  const accounts = getRegisteredAccounts();
+  const matched = accounts.find((acc) => acc.email.toLowerCase() === normalizedEmail);
+
+  if (!matched) {
+    return {
+      user: null,
+      error: 'No account found with this email address. Please register first.',
+    };
   }
-  localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user));
-  localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, 'active');
-  return { user, error: null };
+
+  if (matched.password !== pass) {
+    return {
+      user: null,
+      error: 'Invalid password. Please check your credentials and try again.',
+    };
+  }
+
+  localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(matched.profile));
+  localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, matched.profile.id);
+
+  return { user: matched.profile, error: null };
 };
 
 // Sign Out
 export const signOutUser = async (): Promise<void> => {
   if (isSupabaseConfigured) {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('Supabase signout failed', e);
+    }
   }
   localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
-  await simulateDelay(200);
+  localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+  await simulateDelay(150);
 };
 
 // Update User Profile
 export const updateUserProfile = async (updated: Partial<UserProfile>): Promise<UserProfile> => {
-  const current = await getCurrentUser();
+  const current = await getCurrentUser() || DEFAULT_USER_PROFILE;
   const merged = { ...current, ...updated };
 
   if (isSupabaseConfigured) {
-    await supabase.auth.updateUser({
-      data: {
-        full_name: merged.name,
-        age: merged.age,
-        gender: merged.gender,
-        bloodGroup: merged.bloodGroup,
-        emergencyContactName: merged.emergencyContactName,
-        emergencyContactPhone: merged.emergencyContactPhone,
-        allergies: merged.allergies,
-        existingConditions: merged.existingConditions,
-      },
-    });
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          full_name: merged.name,
+          age: merged.age,
+          gender: merged.gender,
+          bloodGroup: merged.bloodGroup,
+          emergencyContactName: merged.emergencyContactName,
+          emergencyContactPhone: merged.emergencyContactPhone,
+          allergies: merged.allergies,
+          existingConditions: merged.existingConditions,
+        },
+      });
+    } catch (e) {
+      console.warn('Supabase profile update warning', e);
+    }
+  }
+
+  // Update in accounts array as well
+  const accounts = getRegisteredAccounts();
+  const index = accounts.findIndex((acc) => acc.email.toLowerCase() === merged.email.toLowerCase());
+  if (index !== -1) {
+    accounts[index].profile = merged;
+    accounts[index].name = merged.name;
+    saveRegisteredAccounts(accounts);
   }
 
   localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(merged));
@@ -194,11 +301,12 @@ export const updateUserProfile = async (updated: Partial<UserProfile>): Promise<
 };
 
 export const getSettings = async (): Promise<UserSettings> => {
-  await simulateDelay(150);
+  await simulateDelay(100);
   return { ...DEFAULT_SETTINGS };
 };
 
 export const updateSettings = async (updated: Partial<UserSettings>): Promise<UserSettings> => {
-  await simulateDelay(200);
+  await simulateDelay(150);
   return { ...DEFAULT_SETTINGS, ...updated };
 };
+

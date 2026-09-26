@@ -40,7 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate }) => {
             <HeartPulse className="w-6 h-6 stroke-[2.5]" />
           </div>
           <div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight leading-none">HealthBridge</h1>
+            <h1 className="text-xl font-extrabold text-white tracking-tight leading-none">HealthBuddy</h1>
             <span className="text-[10px] uppercase font-bold tracking-widest text-teal-400">Post-Care SaaS</span>
           </div>
         </div>

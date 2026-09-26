@@ -62,7 +62,7 @@ export const ViewRecordModal: React.FC<ViewRecordModalProps> = ({
         <div className="border border-slate-200 rounded-2xl p-6 bg-slate-950 text-slate-100 shadow-inner space-y-3 font-mono text-xs">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <span className="text-teal-400 font-bold flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4" /> HEALTHBRIDGE ENCRYPTED PREVIEW
+              <ShieldCheck className="w-4 h-4" /> HEALTHBUDDY ENCRYPTED PREVIEW
             </span>
             <span className="text-slate-500">ID: {record.id}</span>
           </div>

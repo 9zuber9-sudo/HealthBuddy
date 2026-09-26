@@ -6,7 +6,6 @@ import {
   User,
   ArrowRight,
   ShieldCheck,
-  Database,
   AlertCircle,
   Eye,
   EyeOff,
@@ -47,10 +46,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleQuickDemoLogin = async () => {
+    setEmail('alex.morgan@healthbuddy.io');
+    setPassword('demo123456');
+    setMode('signin');
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const { user, error } = await signInWithSupabase('alex.morgan@healthbridge.io', 'demo123456');
+      const { user, error } = await signInWithSupabase('alex.morgan@healthbuddy.io', 'demo123456');
       if (error) {
         setErrorMsg(error);
       } else if (user) {
@@ -105,7 +107,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           showToast({
             type: 'success',
             title: 'Account Created Successfully!',
-            message: `Welcome to HealthBridge, ${user.name}!`,
+            message: `Welcome to HealthBuddy, ${user.name}!`,
           });
           onLoginSuccess(user);
           onNavigate('dashboard');
@@ -149,7 +151,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <HeartPulse className="w-7 h-7 stroke-[2.5]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-white tracking-tight leading-none">HealthBridge</h1>
+            <h1 className="text-2xl font-black text-white tracking-tight leading-none">HealthBuddy</h1>
             <span className="text-[10px] uppercase font-extrabold tracking-widest text-teal-400">
               Post-Care Management
             </span>
@@ -209,7 +211,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           <div className="p-2.5 rounded-2xl bg-teal-600 text-white shadow-md">
             <HeartPulse className="w-6 h-6 stroke-[2.5]" />
           </div>
-          <span className="text-xl font-extrabold text-white tracking-tight">HealthBridge</span>
+          <span className="text-xl font-extrabold text-white tracking-tight">HealthBuddy</span>
         </div>
 
         <div className="w-full max-w-md space-y-6">
@@ -305,6 +307,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               <Input
                 label="Full Name *"
                 placeholder="e.g. Alex Morgan"
+                variant="dark"
                 leftIcon={<User className="w-4 h-4 text-slate-400" />}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -315,7 +318,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <Input
               label="Email Address *"
               type="email"
-              placeholder="e.g. alex.morgan@healthbridge.io"
+              placeholder="e.g. alex.morgan@healthbuddy.io"
+              variant="dark"
               leftIcon={<Mail className="w-4 h-4 text-slate-400" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -327,14 +331,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 label="Password *"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
+                variant="dark"
                 leftIcon={<Lock className="w-4 h-4 text-slate-400" />}
                 rightIcon={
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="p-1 text-slate-400 hover:text-slate-200"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="p-1 text-slate-400 hover:text-teal-400 focus:outline-none transition-colors cursor-pointer"
+                    title={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="w-4 h-4 text-teal-400" /> : <Eye className="w-4 h-4" />}
                   </button>
                 }
                 value={password}
@@ -348,7 +354,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 label="Confirm Password *"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
+                variant="dark"
                 leftIcon={<Lock className="w-4 h-4 text-slate-400" />}
+                rightIcon={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="p-1 text-slate-400 hover:text-teal-400 focus:outline-none transition-colors cursor-pointer"
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4 text-teal-400" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                }
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -364,14 +381,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="mt-2 text-sm font-extrabold py-3.5"
             >
-              {mode === 'signin' ? 'Sign In to HealthBridge' : 'Register Account'}
+              {mode === 'signin' ? 'Sign In to HealthBuddy' : 'Register Account'}
             </Button>
           </form>
 
           {/* Toggle mode text */}
           <div className="pt-2 text-center text-xs text-slate-400">
             <p>
-              {mode === 'signin' ? "Don't have a HealthBridge account?" : 'Already registered?'}
+              {mode === 'signin' ? "Don't have a HealthBuddy account?" : 'Already registered?'}
               <button
                 type="button"
                 onClick={() => {

@@ -9,6 +9,8 @@ interface LayoutProps {
   user: UserProfile | null;
   onNavigate: (page: PageId) => void;
   onSignOut?: () => void;
+  isDarkMode?: boolean;
+  onToggleTheme?: () => void;
   children: ReactNode;
 }
 
@@ -17,14 +19,16 @@ export const Layout: React.FC<LayoutProps> = ({
   user,
   onNavigate,
   onSignOut,
+  isDarkMode = false,
+  onToggleTheme,
   children,
 }) => {
   if (activePage === 'landing' || activePage === 'auth') {
-    return <div className="min-h-screen bg-slate-50">{children}</div>;
+    return <div className="min-h-screen bg-slate-950">{children}</div>;
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50/70 font-sans text-slate-900">
+    <div className="flex min-h-screen bg-slate-50/70 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 transition-colors">
       <Sidebar activePage={activePage} onNavigate={onNavigate} />
 
       <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-8">
@@ -34,6 +38,8 @@ export const Layout: React.FC<LayoutProps> = ({
           onNavigate={onNavigate}
           onTriggerEmergency={() => onNavigate('emergency')}
           onSignOut={onSignOut}
+          isDarkMode={isDarkMode}
+          onToggleTheme={onToggleTheme}
         />
         <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
           {children}

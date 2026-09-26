@@ -70,14 +70,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-slate-950 shadow-lg">
             <HeartPulse className="w-6 h-6 stroke-[2.5]" />
           </div>
-          <span className="text-xl font-extrabold text-white tracking-tight">HealthBridge</span>
+          <span className="text-xl font-extrabold text-white tracking-tight">HealthBuddy</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" className="text-slate-300 hover:text-white" onClick={() => onNavigate('dashboard')}>
+          <Button variant="ghost" className="text-slate-300 hover:text-white" onClick={() => onNavigate('auth')}>
             Sign In
           </Button>
-          <Button variant="primary" size="md" onClick={() => onNavigate('dashboard')} rightIcon={<ArrowRight className="w-4 h-4" />}>
+          <Button variant="primary" size="md" onClick={() => onNavigate('auth')} rightIcon={<ArrowRight className="w-4 h-4" />}>
             Get Started
           </Button>
         </div>
@@ -91,7 +91,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight max-w-4xl leading-tight">
-          HealthBridge
+          HealthBuddy
         </h1>
 
         <p className="text-xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-300 to-sky-300 mt-4 max-w-3xl">
@@ -106,7 +106,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <Button
             variant="primary"
             size="xl"
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => onNavigate('auth')}
             rightIcon={<ArrowRight className="w-5 h-5" />}
           >
             Get Started
@@ -190,10 +190,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       <footer className="mt-auto py-8 px-6 border-t border-slate-800 text-center text-xs text-slate-500 bg-slate-900">
         <div className="max-w-3xl mx-auto space-y-3">
           <p className="text-slate-400 font-medium">
-            “HealthBridge provides general health information and does not replace professional medical advice.”
+            “HealthBuddy provides general health information and does not replace professional medical advice.”
           </p>
           <p className="text-slate-600">
-            HealthBridge © 2026 • Modern Healthcare SaaS Platform Demo
+            HealthBuddy © 2026 • Modern Healthcare SaaS Platform Demo
           </p>
         </div>
       </footer>

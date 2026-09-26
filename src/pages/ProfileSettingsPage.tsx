@@ -52,16 +52,18 @@ export const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({
       const [uData, sData] = await Promise.all([getCurrentUser(), getSettings()]);
       setSettingsState(sData);
 
-      setName(uData.name);
-      setAge(uData.age);
-      setGender(uData.gender);
-      setBloodGroup(uData.bloodGroup);
-      setPhone(uData.phone);
-      setEmail(uData.email);
-      setEmergencyName(uData.emergencyContactName);
-      setEmergencyPhone(uData.emergencyContactPhone);
-      setAllergiesInput(uData.allergies.join(', '));
-      setConditionsInput(uData.existingConditions.join(', '));
+      if (uData) {
+        setName(uData.name);
+        setAge(uData.age);
+        setGender(uData.gender);
+        setBloodGroup(uData.bloodGroup);
+        setPhone(uData.phone);
+        setEmail(uData.email);
+        setEmergencyName(uData.emergencyContactName);
+        setEmergencyPhone(uData.emergencyContactPhone);
+        setAllergiesInput(uData.allergies.join(', '));
+        setConditionsInput(uData.existingConditions.join(', '));
+      }
     } catch (err) {
       showToast({ type: 'error', title: 'Failed to load user profile' });
     } finally {
@@ -338,7 +340,7 @@ export const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({
           <div className="space-y-1">
             <h4 className="text-sm font-bold text-white">Healthcare Regulatory & Medical Disclaimer</h4>
             <p className="text-xs text-slate-300 leading-relaxed">
-              “HealthBridge provides general health information and does not replace professional medical advice. Always seek the advice of a qualified physician or other health provider with any questions you may have regarding a medical condition.”
+              “HealthBuddy provides general health information and does not replace professional medical advice. Always seek the advice of a qualified physician or other health provider with any questions you may have regarding a medical condition.”
             </p>
           </div>
         </div>

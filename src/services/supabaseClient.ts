@@ -4,13 +4,16 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder-pr
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
 export const isSupabaseConfigured = Boolean(
-  import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
+  import.meta.env.VITE_SUPABASE_URL &&
+  import.meta.env.VITE_SUPABASE_ANON_KEY &&
+  !import.meta.env.VITE_SUPABASE_ANON_KEY.includes('PASTE_YOUR_ANON_KEY_HERE') &&
+  !import.meta.env.VITE_SUPABASE_ANON_KEY.includes('placeholder')
 );
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 if (!isSupabaseConfigured) {
   console.warn(
-    '[HealthBridge Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in environment variables. Falling back to local storage auth mode.'
+    '[HealthBuddy Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in environment variables. Falling back to local storage auth mode.'
   );
 }

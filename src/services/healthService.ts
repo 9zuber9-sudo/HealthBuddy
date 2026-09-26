@@ -234,7 +234,7 @@ export const analyzeSymptoms = async (input: SymptomInput): Promise<AIAnalysisRe
     urgencyLevel: urgency,
     recommendations,
     urgencyMessage,
-    disclaimer: 'This is general health information, not a medical diagnosis. HealthBridge provides educational guidance only. If in doubt, seek professional medical care.',
+    disclaimer: 'This is general health information, not a medical diagnosis. HealthBuddy provides educational guidance only. If in doubt, seek professional medical care.',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   };
 };
