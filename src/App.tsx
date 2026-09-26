@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import type { PageId, UserProfile, FamilyMember } from './types';
-import { ToastProvider } from './context/ToastContext';
+import { ToastProvider, useToast } from './context/ToastContext';
 import { Layout } from './components/layout/Layout';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
+import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AIHealthGuidePage } from './pages/AIHealthGuidePage';
 import { EmergencyPage } from './pages/EmergencyPage';
@@ -20,12 +21,13 @@ import { AddRecordModal } from './components/modals/AddRecordModal';
 import { AddFamilyModal } from './components/modals/AddFamilyModal';
 
 // Services
-import { getCurrentUser } from './services/authService';
+import { getCurrentUser, signOutUser } from './services/authService';
 import { addMedicine } from './services/medicineService';
 import { uploadHealthRecord } from './services/recordsService';
 import { addFamilyMember, getFamilyMembers } from './services/familyService';
 
 export const AppContent: React.FC = () => {
+  const { showToast } = useToast();
   const [activePage, setActivePage] = useState<PageId>('landing');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
@@ -54,6 +56,12 @@ export const AppContent: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSignOut = async () => {
+    await signOutUser();
+    showToast({ type: 'info', title: 'Signed Out', message: 'You have been logged out.' });
+    setActivePage('auth');
+  };
+
   const handleAddMedicineSubmit = async (med: Parameters<typeof addMedicine>[0]) => {
     await addMedicine(med);
   };
@@ -71,6 +79,13 @@ export const AppContent: React.FC = () => {
     switch (activePage) {
       case 'landing':
         return <LandingPage onNavigate={handleNavigate} />;
+      case 'auth':
+        return (
+          <AuthPage
+            onNavigate={handleNavigate}
+            onLoginSuccess={(u) => setUser(u)}
+          />
+        );
       case 'dashboard':
         return (
           <DashboardPage
@@ -119,7 +134,12 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <Layout activePage={activePage} user={user} onNavigate={handleNavigate}>
+    <Layout
+      activePage={activePage}
+      user={user}
+      onNavigate={handleNavigate}
+      onSignOut={handleSignOut}
+    >
       {renderActivePage()}
 
       {/* Global Modals */}

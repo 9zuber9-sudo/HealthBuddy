@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, HeartPulse } from 'lucide-react';
+import { ShieldAlert, HeartPulse, LogOut } from 'lucide-react';
 import type { PageId, UserProfile } from '../../types';
 import { Button } from '../common/Button';
 
@@ -8,6 +8,7 @@ interface HeaderProps {
   user: UserProfile | null;
   onNavigate: (page: PageId) => void;
   onTriggerEmergency: () => void;
+  onSignOut?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,10 +16,12 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   onNavigate,
   onTriggerEmergency,
+  onSignOut,
 }) => {
   const getPageTitle = (page: PageId) => {
     switch (page) {
       case 'landing': return 'Welcome to HealthBridge';
+      case 'auth': return 'Sign In / Register';
       case 'dashboard': return 'Health Overview';
       case 'ai-guide': return 'AI Health Guide';
       case 'emergency': return '🚨 Emergency Mode';
@@ -31,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  if (activePage === 'landing') return null;
+  if (activePage === 'landing' || activePage === 'auth') return null;
 
   return (
     <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
@@ -78,6 +81,16 @@ export const Header: React.FC<HeaderProps> = ({
             <p className="text-[10px] text-teal-700 font-medium">{user ? `Blood: ${user.bloodGroup}` : 'O+'}</p>
           </div>
         </div>
+
+        {onSignOut && (
+          <button
+            onClick={onSignOut}
+            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+            title="Sign Out"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </header>
   );

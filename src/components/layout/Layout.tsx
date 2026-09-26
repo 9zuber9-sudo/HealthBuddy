@@ -8,6 +8,7 @@ interface LayoutProps {
   activePage: PageId;
   user: UserProfile | null;
   onNavigate: (page: PageId) => void;
+  onSignOut?: () => void;
   children: ReactNode;
 }
 
@@ -15,9 +16,10 @@ export const Layout: React.FC<LayoutProps> = ({
   activePage,
   user,
   onNavigate,
+  onSignOut,
   children,
 }) => {
-  if (activePage === 'landing') {
+  if (activePage === 'landing' || activePage === 'auth') {
     return <div className="min-h-screen bg-slate-50">{children}</div>;
   }
 
@@ -31,6 +33,7 @@ export const Layout: React.FC<LayoutProps> = ({
           user={user}
           onNavigate={onNavigate}
           onTriggerEmergency={() => onNavigate('emergency')}
+          onSignOut={onSignOut}
         />
         <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
           {children}
