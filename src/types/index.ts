@@ -75,6 +75,12 @@ export interface FamilyMember {
 
 export type FacilityType = 'hospital' | 'pharmacy' | 'lab' | 'clinic';
 
+export interface FacilityDoctor {
+  name: string;
+  speciality: string;
+  phone: string;
+}
+
 export interface HealthcareFacility {
   id: string;
   name: string;
@@ -90,6 +96,7 @@ export interface HealthcareFacility {
     lat: number;
     lng: number;
   };
+  doctors?: FacilityDoctor[];
 }
 
 export type UrgencyLevel = 'monitor' | 'consult' | 'emergency';

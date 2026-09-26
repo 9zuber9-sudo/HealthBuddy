@@ -2,18 +2,52 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   Google Font: Inter (modern, clean healthcare feel)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @layer base {
   :root {
-    --color-brand-primary: #0284c7;
-    --color-brand-secondary: #0d9488;
-    --color-surface-bg: #f8fafc;
+    --color-brand-primary:   #0d9488;
+    --color-brand-secondary: #0284c7;
+    --color-surface-bg:      #f0f9ff;
+
+    /* Light theme tokens */
+    --bg-page:       #f0f9ff;
+    --bg-card:       #ffffff;
+    --bg-muted:      #f8fafc;
+    --text-primary:  #0f172a;
+    --text-secondary:#475569;
+    --text-muted:    #94a3b8;
+    --border-color:  #e2e8f0;
+  }
+
+  /* ─── Dark Mode Design Tokens ─────────────────────────────
+     Warm deep-navy palette — NOT harsh black.
+     Uses a rich indigo-navy base so it feels premium and
+     breathing instead of a flat dark background.
+  ──────────────────────────────────────────────────────── */
+  .dark {
+    --bg-page:       #0f1629;   /* deep navy, not pitch black */
+    --bg-card:       #1a2236;   /* slightly lighter card surface */
+    --bg-muted:      #141c30;   /* slightly darker muted panels */
+    --text-primary:  #e2e8f0;   /* soft white, not blinding #fff */
+    --text-secondary:#94a3b8;   /* slate-400 */
+    --text-muted:    #64748b;   /* slate-500 */
+    --border-color:  #1e293b;   /* slate-800 */
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
@@ -24,96 +58,156 @@
   }
 }
 
-/* Custom animations & scrollbar styles */
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
+/* ============================================================
+   DARK MODE — Polished token overrides
+   Using warm navy palette instead of harsh pitch-black
+   ============================================================ */
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Smooth theme transitions */
-*, ::before, ::after {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-/* Glassmorphism helpers */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.dark .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
-  border-color: rgba(51, 65, 85, 0.8);
-}
-
-/* Global Dark Mode High-Contrast Color Overrides */
+/* Page background */
 .dark body {
-  background-color: #020617;
-  color: #f8fafc;
+  background-color: #0f1629;
 }
 
-.dark .text-slate-900,
-.dark .text-slate-800 {
-  color: #f8fafc !important;
-}
-
-.dark .text-slate-700,
-.dark .text-slate-600 {
-  color: #cbd5e1 !important;
-}
-
-.dark .text-slate-500 {
-  color: #94a3b8 !important;
-}
-
+/* White cards → rich navy card surface */
 .dark .bg-white {
-  background-color: #0f172a !important;
+  background-color: #1a2236 !important;
 }
 
+/* Slate-50 panels → deep navy-muted */
 .dark .bg-slate-50,
 .dark .bg-slate-50\/50,
 .dark .bg-slate-50\/70 {
-  background-color: #090d1a !important;
+  background-color: #141c30 !important;
 }
 
+/* Slate-100 sections */
 .dark .bg-slate-100 {
   background-color: #1e293b !important;
 }
 
+/* Borders — use dark-blue-grey not black */
 .dark .border-slate-100,
 .dark .border-slate-200,
 .dark .border-slate-200\/80,
 .dark .border-slate-200\/60 {
+  border-color: #263351 !important;
+}
+
+/* ── Text colour hierarchy ─────────────────────────────── */
+/* Primary headings */
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: #e2e8f0 !important;
+}
+/* Body text */
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+/* Muted / helper text */
+.dark .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* ── Sidebar ────────────────────────────────────────────── */
+/* Sidebar is explicitly dark in both modes — keep it consistent */
+.dark aside {
+  background-color: #111827;
+  border-color: #1f2937;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.dark header {
+  background-color: rgba(17, 24, 39, 0.92) !important;
   border-color: #1e293b !important;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+/* ── Inputs in dark mode ─────────────────────────────────── */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
 }
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* ── Buttons & Interactive in dark mode ─────────────────── */
+.dark .hover\:bg-slate-100:hover {
+  background-color: #1e293b !important;
+}
+.dark .hover\:bg-slate-50:hover {
+  background-color: #1a2236 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   GLASSMORPHISM PANELS
+   ──────────────────────────────────────────────────────── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.dark .glass-panel {
+  background: rgba(26, 34, 54, 0.88);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+
+/* ─────────────────────────────────────────────────────────
+   SCROLLBAR
+   ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.dark ::-webkit-scrollbar-thumb       { background: #334155; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ─────────────────────────────────────────────────────────
+   SMOOTH THEME TRANSITIONS
+   Only transition colour props, skip layout / transform
+   ──────────────────────────────────────────────────────── */
+*, ::before, ::after {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* ─────────────────────────────────────────────────────────
+   CUSTOM ANIMATIONS
+   ──────────────────────────────────────────────────────── */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-fade-in-up   { animation: fade-in-up 0.4s ease both; }
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% auto;
+  animation: shimmer 1.5s linear infinite;
+}
+.dark .skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #253047 50%, #1e293b 75%);
+  background-size: 200% auto;
 }
