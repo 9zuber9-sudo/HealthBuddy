@@ -241,7 +241,14 @@ export const analyzeSymptoms = async (input: SymptomInput): Promise<AIAnalysisRe
 
 export const getRecentActivities = async (): Promise<ActivityLog[]> => {
   await simulateDelay(200);
-  return [...MOCK_ACTIVITIES];
+  const session = localStorage.getItem('healthbuddy_auth_session');
+  if (!session) return [];
+  try {
+    const raw = localStorage.getItem(`healthbuddy_activities_${session}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 };
 
 export const getFirstAidGuides = async (): Promise<FirstAidGuide[]> => {

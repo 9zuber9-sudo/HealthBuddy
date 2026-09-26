@@ -13,26 +13,7 @@ export interface StoredAccount {
   profile: UserProfile;
 }
 
-const DEFAULT_USER_PROFILE: UserProfile = {
-  id: 'usr_101',
-  name: 'Alex Morgan',
-  age: 34,
-  gender: 'Non-binary / Male',
-  bloodGroup: 'O+',
-  phone: '+1 (555) 234-5678',
-  email: 'alex.morgan@healthbuddy.io',
-  emergencyContactName: 'Sarah Morgan (Sister)',
-  emergencyContactPhone: '+1 (555) 987-6543',
-  allergies: ['Penicillin', 'Peanuts', 'Dust Mites'],
-  existingConditions: ['Asthma (Mild)', 'Hypertension'],
-};
 
-const DEMO_ACCOUNT: StoredAccount = {
-  email: 'alex.morgan@healthbuddy.io',
-  password: 'demo123456',
-  name: 'Alex Morgan',
-  profile: DEFAULT_USER_PROFILE,
-};
 
 export interface UserSettings {
   notificationsEnabled: boolean;
@@ -58,17 +39,14 @@ const getRegisteredAccounts = (): StoredAccount[] => {
     const raw = localStorage.getItem(LOCAL_STORAGE_ACCOUNTS_KEY);
     if (raw) {
       const accounts: StoredAccount[] = JSON.parse(raw);
-      if (Array.isArray(accounts) && accounts.length > 0) {
+      if (Array.isArray(accounts)) {
         return accounts;
       }
     }
   } catch (e) {
     console.error('Error reading registered accounts', e);
   }
-  // Initialize with default demo account
-  const initial = [DEMO_ACCOUNT];
-  localStorage.setItem(LOCAL_STORAGE_ACCOUNTS_KEY, JSON.stringify(initial));
-  return initial;
+  return [];
 };
 
 // Helper: Save accounts list
@@ -288,7 +266,8 @@ export const signInWithGoogle = async (): Promise<{ error: string | null }> => {
 
 // Update User Profile
 export const updateUserProfile = async (updated: Partial<UserProfile>): Promise<UserProfile> => {
-  const current = await getCurrentUser() || DEFAULT_USER_PROFILE;
+  const current = await getCurrentUser();
+  if (!current) throw new Error('No user logged in');
   const merged = { ...current, ...updated };
 
   if (isSupabaseConfigured) {
